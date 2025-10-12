@@ -38,7 +38,7 @@ def main():
 
     # 🧭 Khởi tạo trang mặc định
     if "active_page" not in st.session_state:
-        st.session_state["active_page"] = "home"
+        st.session_state["active_page"] = "admin"
 
     user = st.session_state["user"]
 
