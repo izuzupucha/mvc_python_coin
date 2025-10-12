@@ -28,7 +28,7 @@ class RSIView:
                     st.write("DEBUG result:", result)
                     # Nếu controller trả về chuỗi kết quả thì hiển thị
                     if result is None:
-                    st.warning("⚠️ Không có dữ liệu trả về từ hàm phân tích RSI.")
+                        st.warning("⚠️ Không có dữ liệu trả về từ hàm phân tích RSI.")
                     elif isinstance(result, str):
                         st.success(result)
                     elif hasattr(result, "to_dict"):   # pandas DataFrame

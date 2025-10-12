@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from controller.coin_controller import CoinController
 from controller.user_controller import UserController
@@ -7,28 +8,41 @@ from view.profile_view import ProfileView
 
 st.set_page_config(page_title="Crypto Analyzer", page_icon="💹", layout="centered")
 
+def is_running_on_streamlit_cloud() -> bool:
+    """
+    Kiểm tra xem app có đang chạy trên Streamlit Cloud không.
+    """
+    return os.environ.get("STREAMLIT_RUNTIME", "") == "cloud" or \
+           "streamlit.io" in os.environ.get("STREAMLIT_SERVER_HOST", "")
+
 def main():
     user_controller = UserController()
+    controller = CoinController()
+
+    # 🧠 Kiểm tra môi trường
+    running_on_cloud = is_running_on_streamlit_cloud()
+
+    # ✅ LOCAL: tạo user giả để test
+    # ✅ CLOUD: bắt buộc login
     if "user" not in st.session_state:
+        if running_on_cloud:
+            LoginView.show_login(user_controller)
+            return
+        else:
             st.session_state["user"] = {
                 "id": 1,
                 "email": "test@example.com",
                 "role": "user",
-                "username": "truo"
+                "username": "local_dev"
             }
-    # 🧭 Nếu chưa đăng nhập thì hiển thị trang Login
-    if "user" not in st.session_state:
-        LoginView.show_login(user_controller)
-        return
 
     # 🧭 Khởi tạo trang mặc định
     if "active_page" not in st.session_state:
-        st.session_state["active_page"] = "admin"
+        st.session_state["active_page"] = "home"
 
     user = st.session_state["user"]
-    controller = CoinController()
 
-    # 🔀 Điều hướng theo active_page
+    # 🔀 Điều hướng trang
     if st.session_state["active_page"] == "home":
         MenuView.go_home()
     elif st.session_state["active_page"] == "profile":
