@@ -58,3 +58,5 @@ class CoinController:
         else:
             result = "Chiến lược chưa hỗ trợ."
         st.success(result)
+        
+        return result
