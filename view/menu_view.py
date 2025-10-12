@@ -9,7 +9,7 @@ from view.psar_view import PSARView
 from view.adx_view import ADXView
 from view.bb_view import BBView
 from view.obv_view import OBVView
-from view.kdj_view import KDJiew
+from view.kdj_view import KDJView
 from config import constants as cons
 
 class MenuView:
