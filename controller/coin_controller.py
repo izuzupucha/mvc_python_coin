@@ -56,7 +56,5 @@ class CoinController:
         elif menu_id == cons.RSI_Stoch_VWAP:
             result = self.model.analyze_rsi_stoch_vwap(coin_pair, interval)
         else:
-            result = "Chiến lược chưa hỗ trợ."
-        st.success(result)
-        
+            result = "Chiến lược chưa hỗ trợ."       
         return result
