@@ -8,7 +8,7 @@ from view.ic_view import ICView
 from view.psar_view import PSARView
 from view.adx_view import ADXView
 from view.bb_view import BBView
-from view.vo_view import VOView
+from view.obv_view import OBVView
 from view.kdj_view import KDJiew
 from config import constants as cons
 
@@ -94,7 +94,7 @@ class MenuView:
             buttons.update({
                 cons.RSI: cols[0].button("Chỉ báo RSI"),
                 cons.BB: cols[1].button("Bollinger Bands"),
-                cons.VO: cols[2].button("Volume + OBV"),
+                cons.OBV: cols[2].button("Volume + OBV"),
                 cons.KDJ: cols[3].button("Chỉ báo KDJ"),
             })
             
@@ -175,8 +175,8 @@ class MenuView:
             elif st.session_state.page == cons.BB:
                 BBView.show(controller)
                 
-            elif st.session_state.page == cons.VO:
-                VOView.show(controller)
+            elif st.session_state.page == cons.OBV:
+                OBVView.show(controller)
                 
             elif st.session_state.page == cons.KDJ:
                 KDJiew.show(controller)
