@@ -9,11 +9,7 @@ from view.profile_view import ProfileView
 st.set_page_config(page_title="Crypto Analyzer", page_icon="💹", layout="centered")
 
 def is_running_on_streamlit_cloud() -> bool:
-    """
-    Kiểm tra xem app có đang chạy trên Streamlit Cloud không.
-    """
-    return os.environ.get("STREAMLIT_RUNTIME", "") == "cloud" or \
-           "streamlit.io" in os.environ.get("STREAMLIT_SERVER_HOST", "")
+    return st.secrets.get("env", {}).get("mode") == "cloud"
 
 def main():
     user_controller = UserController()
