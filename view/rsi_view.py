@@ -25,18 +25,11 @@ class RSIView:
                 try:
                     # Gọi controller theo chuẩn MVC: key "rsi" + params
                     result = controller.handle_strategy(cons.RSI, coin_pair, interval, period)
-                    st.write("DEBUG result:", result)
                     # Nếu controller trả về chuỗi kết quả thì hiển thị
-                    if result is None:
-                        st.warning("⚠️ Không có dữ liệu trả về từ hàm phân tích RSI.")
-                    elif isinstance(result, str):
+                    if result is not None:
                         st.success(result)
-                    elif hasattr(result, "to_dict"):   # pandas DataFrame
-                        st.dataframe(result)
-                    elif hasattr(result, "to_json"):   # plotly Figure
-                        st.plotly_chart(result, use_container_width=True)
                     else:
-                        st.write(result)
+                        st.info(f"Hàm phân tích RSI không có kết quả {result}")
                 except Exception as e:
                     st.info(f"Hàm phân tích RSI có lỗi {e}")
         st.divider()
