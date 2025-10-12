@@ -1,13 +1,7 @@
-os
-json
 streamlit
 firebase_admin
-firebase_admin
-credentials
-firestore
 python-binance
 pandas
 numpy
 requests
-plotly.graph_objects
-time
+plotly
