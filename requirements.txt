@@ -1,0 +1,8 @@
+firebase-admin==6.5.0
+streamlit==1.39.0
+
+import streamlit as st
+import firebase_admin 
+from firebase_admin import credentials, firestore
+import pandas as pd
+from io import BytesIO
