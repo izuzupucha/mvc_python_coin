@@ -1,0 +1,3 @@
+# .gitignore
+*.json
+.streamlit/secrets.toml
