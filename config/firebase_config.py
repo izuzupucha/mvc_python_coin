@@ -38,3 +38,7 @@ def init_firebase():
     except Exception as e:
         st.error(f"⚠️ Lỗi không xác định khi kết nối Firebase: {e}")
         return None
+# =======================
+# Tạo kết nối Firestore mặc định
+# =======================
+db = init_firebase()        
