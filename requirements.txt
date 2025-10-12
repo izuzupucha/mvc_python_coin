@@ -5,7 +5,7 @@ firebase_admin
 firebase_admin
 credentials
 firestore
-binance.client Client
+python-binance
 pandas
 numpy
 requests
