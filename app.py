@@ -5,6 +5,7 @@ from controller.user_controller import UserController
 from view.menu_view import MenuView
 from view.login_view import LoginView
 from view.profile_view import ProfileView
+import datetime
 
 st.set_page_config(page_title="Crypto Analyzer", page_icon="💹", layout="centered")
 
@@ -12,7 +13,7 @@ def is_running_on_streamlit_cloud() -> bool:
     return st.secrets.get("env", {}).get("mode") == "cloud"
 
 def main():
-    params = st.experimental_get_query_params()
+    params = st.query_params
     if "ping" in params:
         st.write(f"OK - {datetime.datetime.utcnow().isoformat()} UTC")
         st.stop()
