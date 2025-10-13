@@ -13,7 +13,10 @@ class LoginView:
         # MÀN HÌNH 1: ĐĂNG NHẬP
         # ================================
         if st.session_state["screen"] == "login":
-            st.title("🔐 Đăng nhập hệ thống")
+            st.markdown(
+                f"<p style='font-size:16px; font-weight:600; color:#333;'>🔐 Đăng nhập</p>",
+                unsafe_allow_html=True
+            )
 
             email = st.text_input("Email hoặc Username")
             password = st.text_input("Mật khẩu", type="password")
