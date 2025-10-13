@@ -587,7 +587,7 @@ class CoinModel:
                 f"{signal}"
             )
 
-            return result, obv
+            return result
 
         except Exception as e:
             return f"⚠️ Lỗi khi tính OBV: {e}", pd.Series()      
@@ -634,7 +634,7 @@ class CoinModel:
             return f"⚠️ Lỗi khi tính RSI: {e}"  
             
     # ================= KDJ =================        
-    def analyze_kdj(self, df, period=9, k_smooth=3, d_smooth=3):
+    def analyze_kdj(self, coin_pair, interval, period=9, k_smooth=3, d_smooth=3):
         """
         Tính chỉ báo KDJ cho DataFrame nến.
         df: DataFrame phải có cột ['high','low','close']
@@ -682,7 +682,7 @@ class CoinModel:
                 f"- J hiện tại: {last_j:.2f}\n"
                 f"{signal}"
             )
-            return result, kdj_df
+            return result
 
         except Exception as e:
             return f"⚠️ Lỗi khi tính KDJ: {e}", pd.DataFrame()

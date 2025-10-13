@@ -179,7 +179,7 @@ class MenuView:
                 OBVView.show(controller)
                 
             elif st.session_state.page == cons.KDJ:
-                KDJiew.show(controller)
+                KDJView.show(controller)
                 
             elif st.session_state.page == cons.EMA_MACD_RSI:
                 st.header("📊 EMA_MACD_RSI Indicator")
