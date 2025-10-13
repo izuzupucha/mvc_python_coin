@@ -21,7 +21,7 @@ class ADXView:
                 st.warning("⚠️ Vui lòng nhập cặp coin trước khi phân tích.")
             else:
                 try:
-                    result = controller.handle_strategy(cons.ADX, coin_pair)
+                    result = controller.handle_strategy(cons.ADX, coin_pair, interval)
                     if result is not None:
                         st.success(result)
                     else:

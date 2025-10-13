@@ -21,7 +21,7 @@ class KDJView:
                 st.warning("⚠️ Vui lòng nhập cặp coin trước khi phân tích.")
             else:
                 try:
-                    result = controller.handle_strategy(cons.KDJ, coin_pair)
+                    result = controller.handle_strategy(cons.KDJ, coin_pair, interval)
                     if result is not None:
                         st.success(result)
                     else:
