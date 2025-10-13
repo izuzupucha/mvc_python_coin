@@ -48,8 +48,10 @@ class LoginView:
         # MÀN HÌNH 2: QUÊN MẬT KHẨU
         # ================================
         elif st.session_state["screen"] == "reset_password":
-            st.title("🔑 Đặt lại mật khẩu")
-
+            st.markdown(
+                f"<p style='font-size:16px; font-weight:600; color:#333;'>🔑 Đặt lại mật khẩu</p>",
+                unsafe_allow_html=True
+            )
             reset_email = st.text_input("Nhập email của bạn")
             new_password = st.text_input("Mật khẩu mới", type="password")
 
