@@ -7,6 +7,8 @@ import numpy as np
 import requests
 import plotly.graph_objects as go
 import time
+
+
 BINANCE_ENDPOINTS = [
     "https://data-api.binance.vision/api/v3/klines",
     "https://api1.binance.com/api/v3/klines",
@@ -686,6 +688,91 @@ class CoinModel:
 
         except Exception as e:
             return f"⚠️ Lỗi khi tính KDJ: {e}", pd.DataFrame()
+            
+    #==============================Tính toán Entry / Stoploss / TakeProfit dựa theo ATR.================================
+    def calculate_trade_levels_atr(self, symbol, interval, direction="long", atr_period=14, atr_mult_sl=1.0, rr_ratio=1.5):
+        """
+        Tính toán Entry / Stoploss / TakeProfit dựa theo ATR.
+        - atr_period: số nến dùng để tính ATR
+        - atr_mult_sl: hệ số nhân ATR cho stoploss
+        - rr_ratio: tỉ lệ RR (takeprofit = stop_distance * rr_ratio)
+        """
+        try:
+            df = self.get_klines_binance(symbol=symbol, interval=interval, limit=atr_period + 2)
+            if df.empty:
+                return None
+
+            # --- Tính ATR ---
+            high = df["high"]
+            low = df["low"]
+            close = df["close"]
+            tr1 = high - low
+            tr2 = abs(high - close.shift())
+            tr3 = abs(low - close.shift())
+            tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+            atr = tr.rolling(atr_period).mean().iloc[-1]
+
+            entry = close.iloc[-1]
+            if direction == "long":
+                stoploss = entry - atr * atr_mult_sl
+                takeprofit = entry + (atr * atr_mult_sl * rr_ratio)
+            else:
+                stoploss = entry + atr * atr_mult_sl
+                takeprofit = entry - (atr * atr_mult_sl * rr_ratio)
+
+            return {
+                "symbol": symbol,
+                "interval": interval,
+                "direction": direction,
+                "entry": round(entry, 4),
+                "stoploss": round(stoploss, 4),
+                "takeprofit": round(takeprofit, 4),
+                "atr_value": round(atr, 4),
+                "timestamp": pd.Timestamp.now()
+            }
+        except Exception as e:
+            st.error(f"Lỗi tính ATR SL/TP: {e}")
+            return None
+    #===================Tính toán Entry / Stoploss / TakeProfit dựa theo Bollinger Bands============================
+    def calculate_trade_levels_bb(self, symbol, interval, direction="long", period=20, mult=2):
+        """
+        Tính toán Entry / Stoploss / TakeProfit dựa theo Bollinger Bands.
+        """
+        try:
+            df = self.get_klines_binance(symbol=symbol, interval=interval, limit=period + 5)
+            if df.empty:
+                return None
+
+            df["ma"] = df["close"].rolling(period).mean()
+            df["std"] = df["close"].rolling(period).std()
+            df["upper"] = df["ma"] + mult * df["std"]
+            df["lower"] = df["ma"] - mult * df["std"]
+
+            last = df.iloc[-1]
+            entry = last["close"]
+
+            if direction == "long":
+                stoploss = last["lower"]
+                takeprofit = entry + (entry - stoploss) * 1.5
+            else:
+                stoploss = last["upper"]
+                takeprofit = entry - (stoploss - entry) * 1.5
+
+            return {
+                "symbol": symbol,
+                "interval": interval,
+                "direction": direction,
+                "entry": round(entry, 4),
+                "stoploss": round(stoploss, 4),
+                "takeprofit": round(takeprofit, 4),
+                "bb_upper": round(last["upper"], 4),
+                "bb_lower": round(last["lower"], 4),
+                "timestamp": pd.Timestamp.now()
+            }
+        except Exception as e:
+            st.error(f"Lỗi tính Bollinger SL/TP: {e}")
+            return None
+    
             
 model = CoinModel()
 print(dir(model))

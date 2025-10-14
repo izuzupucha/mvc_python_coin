@@ -6,6 +6,8 @@ from controller.user_controller import UserController
 from view.menu_view import MenuView
 from view.login_view import LoginView
 from view.profile_view import ProfileView
+from view.order_form_view import OrderFormView
+from view.ema_view import EMAView
 import datetime
 
 st.set_page_config(page_title="Crypto Analyzer", page_icon="💹", layout="centered")
@@ -43,15 +45,33 @@ def main():
     if "active_page" not in st.session_state:
         st.session_state["active_page"] = "admin"
 
+    # 🧭 Khởi tạo view mặc định (menu)
+    if "current_view" not in st.session_state:
+        st.session_state["current_view"] = "menu"
+
     user = st.session_state["user"]
 
-    # 🔀 Điều hướng trang
-    if st.session_state["active_page"] == "home":
-        MenuView.go_home()
-    elif st.session_state["active_page"] == "profile":
-        ProfileView.show_profile(user_controller, user)
-    else:
+    # 🔀 Điều hướng hiển thị view
+    current_view = st.session_state.get("current_view", "menu")
+
+    if current_view == "menu":
         MenuView.show_main_menu(controller, user_controller, user)
+
+    elif current_view == "ema":
+        EMAView.show(controller)
+
+    elif current_view == "order_form":        
+        order_type, coin_pair_to_order = st.session_state["show_order_form"]
+        OrderFormView.show(order_type, coin_pair_to_order)
+
+    elif current_view == "profile":
+        ProfileView.show_profile(user_controller, user)
+
+    else:
+        st.warning("⚠️ View không xác định, quay lại menu chính.")
+        st.session_state["current_view"] = "menu"
+        st.rerun()
+
 
 if __name__ == "__main__":
     main()

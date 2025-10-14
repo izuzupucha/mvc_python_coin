@@ -11,6 +11,7 @@ from view.bb_view import BBView
 from view.obv_view import OBVView
 from view.kdj_view import KDJView
 from config import constants as cons
+from common.session_utils import reset_all_states
 
 class MenuView:
     @staticmethod
@@ -149,12 +150,14 @@ class MenuView:
                 st.success("Đã đăng xuất!")
                 st.rerun()
         else:
-            # === PAGE 2: RSI ===
+            # === PAGE 2: RSI ===       
             # Nút quay lại đầu trang
             if st.button("🔙 Quay lại Trang chủ", key = "top"):
                 MenuView.go_home()
                 
             elif st.session_state.page == cons.EMA:
+                reset_all_states()
+                st.session_state["current_view"] = "ema"
                 EMAView.show(controller)
                 
             elif st.session_state.page == cons.MACD:
@@ -223,4 +226,5 @@ class MenuView:
     def go_home():
         """Chuyển hướng về trang chủ"""
         st.session_state.page = "home"
+        st.session_state["current_view"] = "menu"
         st.rerun()
