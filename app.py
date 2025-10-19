@@ -3,11 +3,11 @@ sys.path.append(os.path.dirname(__file__))
 import streamlit as st
 from controller.coin_controller import CoinController
 from controller.user_controller import UserController
-from view.menu_view import MenuView
-from view.login_view import LoginView
-from view.profile_view import ProfileView
-from view.order_form_view import OrderFormView
-from view.ema_view import EMAView
+from view.admin.menu_view import MenuView
+from view.user.login_view import LoginView
+from view.user.profile_view import ProfileView
+from view.indicators.order_form_view import OrderFormView
+from view.indicators.ema_view import EMAView
 import datetime
 
 st.set_page_config(page_title="Crypto Analyzer", page_icon="💹", layout="centered")

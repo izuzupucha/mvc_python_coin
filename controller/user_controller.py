@@ -1,6 +1,5 @@
 from model.user_model import UserModel
 from config.security import hash_password
-
 class UserController:
     def login(self, email, password):
         user = UserModel.get_user_by_username_or_email(email)
