@@ -10,7 +10,12 @@ class EMAView:
 
         if "ema_result" not in st.session_state:
             st.session_state["ema_result"] = None
-
+        if st.button("🔙 Quay lại Trang chủ", key = "ema_top"):
+            """Chuyển hướng về trang chủ"""
+            st.session_state.page = "home"
+            st.session_state["current_view"] = "menu"
+            st.rerun()
+            st.stop() 
         # --- Form ---
         with st.form("ema_form"):
             coin_pair = st.text_input("Nhập cặp coin cần phân tích", value=st.session_state.get("last_coin_pair", "BTCUSDT"))
@@ -36,7 +41,13 @@ class EMAView:
                         st.session_state["ema_result"] = None
 
         result = st.session_state["ema_result"]
-
+        if st.button("🔙 Quay lại Trang chủ", key = "ema_bottom"):
+            """Chuyển hướng về trang chủ"""
+            st.session_state.page = "home"
+            st.session_state["current_view"] = "menu"
+            st.rerun()
+            st.stop() 
+            
         if result:
             st.divider()
             st.success(result)

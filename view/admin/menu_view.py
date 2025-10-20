@@ -150,12 +150,8 @@ class MenuView:
                 st.success("Đã đăng xuất!")
                 st.rerun()
         else:
-            # === PAGE 2: RSI ===       
-            # Nút quay lại đầu trang
-            if st.button("🔙 Quay lại Trang chủ", key = "top"):
-                MenuView.go_home()
-                
-            elif st.session_state.page == cons.EMA:
+            # === PAGE 2: RSI ===                      
+            if st.session_state.page == cons.EMA:
                 reset_all_states()
                 st.session_state["current_view"] = "ema"
                 EMAView.show(controller)
@@ -220,11 +216,4 @@ class MenuView:
             else:
                 st.header(f"🔍 Đang chạy chiến lược: {st.session_state.page}")
                 controller.handle_strategy(st.session_state.page, None, None)
-            if st.button("🔙 Quay lại Trang chủ", key = "bottom"):
-                    MenuView.go_home()
-    @staticmethod
-    def go_home():
-        """Chuyển hướng về trang chủ"""
-        st.session_state.page = "home"
-        st.session_state["current_view"] = "menu"
-        st.rerun()
+  

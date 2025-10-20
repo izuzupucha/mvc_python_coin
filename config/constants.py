@@ -22,3 +22,27 @@ MACD_SAR_ADX = "MACD_SAR_ADX"
 # ===== COMBO SCALPING =====
 EMA_SAR = "EMA_SAR"
 RSI_Stoch_VWAP = "RSI_Stoch_VWAP"
+#Scalping (5m–15m)
+#EMA(9,21), StochRSI, VWAP
+#EMA cho xu hướng, StochRSI cho điểm vào, VWAP xác nhận vùng mua
+#Phát hiện đảo chiều
+#Bollinger + RSI + SAR
+# chỉ báo DMI, MTM, EMV => xác định động lượng
+#MA
+#EMA
+#WMA
+#BOLL
+#VWAP
+#AVL
+#TRIX
+
+#SAR
+#VOL
+#MACD 
+#RSI
+#MFI
+#KDJ
+#OBV
+#CCI
+#StochRSI
+#WR
