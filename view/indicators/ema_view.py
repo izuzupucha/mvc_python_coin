@@ -2,7 +2,7 @@ import streamlit as st
 from config import constants as cons
 from common.session_utils import reset_order_form_state, reset_ema_state
 from common.session_utils import reset_all_states
-from model.calcullate_model.calculate_trade_levels_atr_model import CalculateTradeLevelsAtrModel
+from model.calcullate_model.calculate_entry_model import CalculateEntryModel
 class EMAView:
     @staticmethod
     def show(controller):
@@ -54,7 +54,7 @@ class EMAView:
 
             if "mua" in result.lower() or "tăng" in result.lower():
                 if st.button("🟢 Đặt lệnh Mua (Long)", key="btn_long"):
-                    trade = controller.calculate_trade_levels_atr_model.calculate_trade_levels_atr(
+                    trade = controller.calculate_entry_model.calculate_entry(
                         symbol=st.session_state["last_coin_pair"],
                         interval=st.session_state["last_interval"],
                         direction="long",
@@ -71,7 +71,7 @@ class EMAView:
 
             elif "bán" in result.lower() or "giảm" in result.lower():
                 if st.button("🔴 Đặt lệnh Bán (Short)", key="btn_short"):
-                    trade = controller.calculate_trade_levels_atr_model.calculate_trade_levels_atr(
+                    trade = controller.calculate_entry_model.calculate_entry(
                         symbol=st.session_state["last_coin_pair"],
                         interval=st.session_state["last_interval"],
                         direction="short",

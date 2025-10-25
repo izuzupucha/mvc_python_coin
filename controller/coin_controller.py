@@ -10,7 +10,7 @@ from model.analyze_model.analyze_bb_model import AnalyzeBBModel
 from model.analyze_model.analyze_rsi_model import AnalyzeRSIModel
 from model.analyze_model.analyze_obv_model import AnalyzeOBVModel
 from model.analyze_model.analyze_kdj_model import AnalyzeKDJModel
-from model.calcullate_model.calculate_trade_levels_atr_model import CalculateTradeLevelsAtrModel
+from model.calcullate_model.calculate_entry_model import CalculateEntryModel
 
 class CoinController:
     def __init__(self):
@@ -25,7 +25,7 @@ class CoinController:
         self.rsi_model = AnalyzeRSIModel(data_model)
         self.obv_model = AnalyzeOBVModel(data_model)
         self.kdj_model = AnalyzeKDJModel(data_model)
-        self.calculate_trade_levels_atr_model = CalculateTradeLevelsAtrModel(data_model)
+        self.calculate_entry_model = CalculateEntryModel(data_model)
 
     def handle_strategy(self, menu_id, coin_pair=None, interval=None, period=None):        
         # ===== CHỈ BÁO XU HƯỚNG =====
