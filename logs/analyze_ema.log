@@ -1,0 +1,2 @@
+2025-10-26 11:14:41,498 | INFO | [START analyze_ema] symbol=BTCUSDT, interval=15m, short_period=12, long_period=26
+2025-10-26 11:14:42,766 | INFO | [END analyze_ema] symbol=BTCUSDT, interval=15m, EMA_short=111473.06, EMA_long=111530.72, signal=SELL

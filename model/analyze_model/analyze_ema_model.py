@@ -1,18 +1,23 @@
-import os
 import streamlit as st
 from model.base_analyze_model import BaseAnalyzeModel
+
 class AnalyzeEMAModel(BaseAnalyzeModel):
     def __init__(self, data_model):
         super().__init__(data_model)
+
     #=============== EMA =================#
     def analyze_ema(self, coin_pair, interval, short_period=12, long_period=26):
         """
         Phân tích EMA (Exponential Moving Average) cho 1 cặp coin.
+        Hiển thị toàn bộ tham số và kết quả bằng st.write().
         """
-        try:
-            df,info = self.data_model.get_klines_binance(symbol=coin_pair, interval=interval, limit=500)
+        try:            
+            # --- Lấy dữ liệu ---
+            df, info = self.data_model.get_klines_binance(symbol=coin_pair, interval=interval, limit=500)
+
             if df.empty:
-                return "Không lấy được dữ liệu Binance."
+                st.warning(f"⚠️ Không lấy được dữ liệu Binance cho {coin_pair} ({interval}).")
+                return f"Không lấy được dữ liệu Binance cho {coin_pair} ({interval})."
 
             st.info(f"Tính EMA cho: {coin_pair}, khung: {interval}, chu kỳ: {short_period}/{long_period} nến")
 
@@ -26,10 +31,13 @@ class AnalyzeEMAModel(BaseAnalyzeModel):
 
             if last_ema_short > last_ema_long:
                 signal = "🟢 EMA ngắn cắt lên EMA dài → Tín hiệu **mua** (xu hướng tăng)."
+                action = "BUY"
             elif last_ema_short < last_ema_long:
                 signal = "🔴 EMA ngắn cắt xuống EMA dài → Tín hiệu **bán** (xu hướng giảm)."
+                action = "SELL"
             else:
                 signal = "⚪ EMA song song → Thị trường đi ngang."
+                action = "NEUTRAL"
 
             result = (
                 f"**Kết quả EMA ({coin_pair})**\n"
@@ -39,7 +47,11 @@ class AnalyzeEMAModel(BaseAnalyzeModel):
             )
             return result
 
-        except KeyError:
-            return "❌ Dữ liệu không hợp lệ — thiếu cột 'close'."
+        except KeyError as e:
+            msg = f"❌ Dữ liệu không hợp lệ — thiếu cột 'close'. Lỗi: {e}"
+            st.error(msg)
+            return msg
         except Exception as e:
-            return f"⚠️ Lỗi khi tính EMA: {e}"
+            msg = f"⚠️ Lỗi khi tính EMA: {e}"
+            st.error(msg)
+            return msg

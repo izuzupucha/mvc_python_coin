@@ -1,4 +1,3 @@
-# file: model/calculate_entry_model.py  (hoặc tương tự)
 import pandas as pd
 import numpy as np
 import streamlit as st
@@ -11,36 +10,37 @@ class CalculateEntryModel(BaseAnalyzeModel):
     def calculate_entry(self,
                         symbol,
                         interval,
-                        # cho phép direction optional; nếu None -> model sẽ quyết định
                         direction: str = None,
                         ema_period: int = 20,
                         rsi_period: int = 14,
                         atr_period: int = 14,
                         atr_mult_sl: float = 1.0,
                         rr_ratio: float = 1.5,
-                        lookback: int = 200):
+                        lookback: int = 200,
+                        rsi_threshold_long=45.0,
+                        rsi_threshold_short=55.0):
         """
-        Tính entry theo chiến lược RSI + EMA Pullback + ATR.
-        Nếu direction is None -> model sẽ suy ra dựa trên EMA20 vs price.
-        Nếu direction được truyền ("long" hoặc "short") -> model sẽ tuân theo đó.
-        Trả về dict giống cấu trúc:
-        {
-            "symbol": symbol,
-            "interval": interval,
-            "direction": "long" / "short",
-            "entry": ...,
-            "stoploss": ...,
-            "takeprofit": ...,
-            "atr_value": ...,
-            "ema": ...,
-            "rsi": ...,
-            "timestamp": ...
-        }
-        Trả về None nếu không có tín hiệu.
+        Tính entry theo chiến lược RSI + EMA Pullback + ATR, có log chi tiết ra màn hình.
         """
         try:
+            st.markdown("### 🧩 **THÔNG TIN ĐẦU VÀO**")
+            st.json({
+                "symbol": symbol,
+                "interval": interval,
+                "direction_input": direction,
+                "ema_period": ema_period,
+                "rsi_period": rsi_period,
+                "atr_period": atr_period,
+                "atr_mult_sl": atr_mult_sl,
+                "rr_ratio": rr_ratio,
+                "lookback": lookback,
+                "rsi_threshold_long": rsi_threshold_long,
+                "rsi_threshold_short": rsi_threshold_short
+            })
+
             df, info = self.data_model.get_klines_binance(symbol=symbol, interval=interval, limit=lookback)
             if df.empty:
+                st.warning("⚠️ Dữ liệu trống, không thể tính toán.")
                 return None
 
             # --- Tính EMA ---
@@ -68,42 +68,57 @@ class CalculateEntryModel(BaseAnalyzeModel):
             last = df.iloc[-1]
             prev = df.iloc[-2]
 
-            # Nếu caller không truyền direction, suy luận từ EMA vs price
+            # --- Xác định hướng giao dịch ---
             inferred_direction = None
             if last["close"] > last["ema"]:
                 inferred_direction = "long"
             elif last["close"] < last["ema"]:
                 inferred_direction = "short"
 
-            # final direction: param overrides inference (if provided)
             final_dir = direction.lower() if isinstance(direction, str) else inferred_direction
 
-            # Nếu vẫn không rõ direction -> không có tín hiệu
+            st.markdown("### 📊 **THÔNG TIN KỸ THUẬT CUỐI CÙNG**")
+            st.json({
+                "last_close": round(last["close"], 4),
+                "prev_close": round(prev["close"], 4),
+                "ema": round(last["ema"], 4),
+                "rsi_last": round(last["rsi"], 2),
+                "rsi_prev": round(prev["rsi"], 2),
+                "atr": round(last["atr"], 4),
+                "direction_inferred": inferred_direction,
+                "direction_final": final_dir,
+                "rsi_threshold_long": rsi_threshold_long,
+                "rsi_threshold_short": rsi_threshold_short
+            })
+
+            # --- Kiểm tra hướng ---
             if final_dir not in ("long", "short"):
-                st.info("Không xác định được hướng (long/short).")
+                st.info("⚠️ Không xác định được hướng (long/short).")
                 return None
 
-            # Logic RSI + Pullback confirmation:
-            # - Long: RSI < 40 và RSI đang bật tăng (prev.rsi < last.rsi)
-            # - Short: RSI > 60 và RSI đang bật giảm (prev.rsi > last.rsi)
-            rsi_ok = False
+            # --- Kiểm tra RSI Pullback động theo ngưỡng người dùng ---
             if final_dir == "long":
-                rsi_ok = (last["rsi"] < 40) and (prev["rsi"] < last["rsi"])
-                st.info(f"RSI Pullback (LONG) — prev: {prev['rsi']:.2f}, last: {last['rsi']:.2f}, ok={rsi_ok}")
+                rsi_ok = (last["rsi"] < rsi_threshold_long) and (prev["rsi"] < last["rsi"])
+                st.info(
+                    f"RSI Pullback (LONG) — prev={prev['rsi']:.2f}, last={last['rsi']:.2f}, "
+                    f"threshold={rsi_threshold_long}, ok={rsi_ok}"
+                )
             else:
-                rsi_ok = (last["rsi"] > 60) and (prev["rsi"] > last["rsi"])
-                st.info(f"RSI Pullback (SHORT) — prev: {prev['rsi']:.2f}, last: {last['rsi']:.2f}, ok={rsi_ok}")
+                rsi_ok = (last["rsi"] > rsi_threshold_short) and (prev["rsi"] > last["rsi"])
+                st.info(
+                    f"RSI Pullback (SHORT) — prev={prev['rsi']:.2f}, last={last['rsi']:.2f}, "
+                    f"threshold={rsi_threshold_short}, ok={rsi_ok}"
+                )
 
             if not rsi_ok:
-                # Không thỏa điều kiện pullback
-                st.info("Không thỏa điều kiện RSI pullback cho hướng: " + final_dir)
+                st.warning(f"❌ Không thỏa điều kiện RSI pullback cho hướng {final_dir.upper()}")
                 return None
 
             entry = float(last["close"])
             atr = float(last["atr"])
 
             if np.isnan(atr) or atr <= 0:
-                st.warning("ATR không hợp lệ, không thể tính SL/TP.")
+                st.warning("⚠️ ATR không hợp lệ, không thể tính SL/TP.")
                 return None
 
             if final_dir == "long":
@@ -113,7 +128,7 @@ class CalculateEntryModel(BaseAnalyzeModel):
                 stoploss = entry + atr * atr_mult_sl
                 takeprofit = entry - (atr * atr_mult_sl * rr_ratio)
 
-            return {
+            result = {
                 "symbol": symbol,
                 "interval": interval,
                 "direction": final_dir,
@@ -126,6 +141,11 @@ class CalculateEntryModel(BaseAnalyzeModel):
                 "timestamp": pd.Timestamp.now()
             }
 
+            st.markdown("### ✅ **KẾT QUẢ CUỐI CÙNG**")
+            st.json(result)
+
+            return result
+
         except Exception as e:
-            st.error(f"Lỗi trong calculate_entry: {e}")
+            st.error(f"💥 Lỗi trong calculate_entry: {e}")
             return None
