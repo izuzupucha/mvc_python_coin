@@ -32,7 +32,7 @@ class EMAView:
                     st.session_state.get("last_interval", "15m")
                 )
             )
-            submitted = st.form_submit_button("🔍 Phân tích EMA")
+            submitted = st.form_submit_button("Phân tích EMA")
             
             if submitted:
                 if not coin_pair.strip():
@@ -65,14 +65,14 @@ class EMAView:
         if result:
             st.divider()
             st.success(result)
-
+            st.divider()
             # --- Cấu hình RSI Pullback ---
             st.markdown("### ⚙️ Cấu hình RSI Pullback")
             col1, col2 = st.columns(2)
             with col1:
                 st.session_state["rsi_threshold_long"] = st.number_input(
                     "🔹 Ngưỡng RSI cho Long (mặc định 45):",
-                    min_value=10.0, max_value=60.0,
+                    min_value=10.0, max_value=80.0,
                     value=st.session_state.get("rsi_threshold_long", 45.0),
                     step=0.5, key="rsi_long_input"
                 )
@@ -82,8 +82,7 @@ class EMAView:
                     min_value=40.0, max_value=90.0,
                     value=st.session_state.get("rsi_threshold_short", 55.0),
                     step=0.5, key="rsi_short_input"
-                )
-            st.divider()
+                )           
 
             # --- Logic đặt lệnh ---
             def log_trade_result(trade):
@@ -162,6 +161,6 @@ class EMAView:
                         st.session_state["show_order_form"] = ("short", trade["symbol"])
                         st.session_state["current_view"] = "order_form"
                         st.rerun()
-
+            st.divider()
         elif result is not None:
             st.info("Không có dữ liệu trả về.")

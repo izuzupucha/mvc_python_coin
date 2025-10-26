@@ -25,17 +25,17 @@ class CalculateEntryModel(BaseAnalyzeModel):
         try:
             st.markdown("### 🧩 **THÔNG TIN ĐẦU VÀO**")
             st.json({
-                "symbol": symbol,
-                "interval": interval,
-                "direction_input": direction,
-                "ema_period": ema_period,
-                "rsi_period": rsi_period,
-                "atr_period": atr_period,
-                "atr_mult_sl": atr_mult_sl,
-                "rr_ratio": rr_ratio,
-                "lookback": lookback,
-                "rsi_threshold_long": rsi_threshold_long,
-                "rsi_threshold_short": rsi_threshold_short
+                "Cặp coin (symbol)": symbol,
+                "Khung thời gian (interval)": interval,
+                "Hướng vào lệnh": direction,
+                "Chu kỳ EMA": ema_period,
+                "Chu kỳ RSI": rsi_period,
+                "Chu kỳ ATR": atr_period,
+                "Hệ số ATR (SL)": atr_mult_sl,
+                "Tỷ lệ RR (TP/SL)": rr_ratio,
+                "Số nến phân tích": lookback,
+                "Ngưỡng RSI Long": rsi_threshold_long,
+                "Ngưỡng RSI Short": rsi_threshold_short
             })
 
             df, info = self.data_model.get_klines_binance(symbol=symbol, interval=interval, limit=lookback)
@@ -79,18 +79,17 @@ class CalculateEntryModel(BaseAnalyzeModel):
 
             st.markdown("### 📊 **THÔNG TIN KỸ THUẬT CUỐI CÙNG**")
             st.json({
-                "last_close": round(last["close"], 4),
-                "prev_close": round(prev["close"], 4),
-                "ema": round(last["ema"], 4),
-                "rsi_last": round(last["rsi"], 2),
-                "rsi_prev": round(prev["rsi"], 2),
-                "atr": round(last["atr"], 4),
-                "direction_inferred": inferred_direction,
-                "direction_final": final_dir,
-                "rsi_threshold_long": rsi_threshold_long,
-                "rsi_threshold_short": rsi_threshold_short
+                "Giá đóng nến hiện tại (last_close)": round(last["close"], 4),
+                "Giá đóng nến trước đó (prev_close)": round(prev["close"], 4),
+                "EMA hiện tại": round(last["ema"], 4),
+                "RSI hiện tại (rsi_last)": round(last["rsi"], 2),
+                "RSI trước đó (rsi_prev)": round(prev["rsi"], 2),
+                "ATR hiện tại": round(last["atr"], 4),
+                "Hướng suy luận từ EMA (direction_inferred)": inferred_direction,
+                "Hướng giao dịch cuối cùng (direction_final)": final_dir,
+                "Ngưỡng RSI cho Long": rsi_threshold_long,
+                "Ngưỡng RSI cho Short": rsi_threshold_short
             })
-
             # --- Kiểm tra hướng ---
             if final_dir not in ("long", "short"):
                 st.info("⚠️ Không xác định được hướng (long/short).")
@@ -98,18 +97,25 @@ class CalculateEntryModel(BaseAnalyzeModel):
 
             # --- Kiểm tra RSI Pullback động theo ngưỡng người dùng ---
             if final_dir == "long":
-                rsi_ok = (last["rsi"] < rsi_threshold_long) and (prev["rsi"] < last["rsi"])
+                rsi_ok = True
+                #rsi_ok = (last["rsi"] < rsi_threshold_long) and (prev["rsi"] < last["rsi"])
                 st.info(
-                    f"RSI Pullback (LONG) — prev={prev['rsi']:.2f}, last={last['rsi']:.2f}, "
-                    f"threshold={rsi_threshold_long}, ok={rsi_ok}"
+                    f"RSI Pullback (LONG) — "
+                    f"RSI trước đó (prev_rsi)={prev['rsi']:.2f}, RSI hiện tại (last_rsi)={last['rsi']:.2f}, "
+                    f"Ngưỡng RSI cho Long={rsi_threshold_long}, ok={rsi_ok}. "
+                    f"Không thỏa điều kiện: last_rsi({last['rsi']:.2f}) < ngưỡng RSI Long({rsi_threshold_long}) "
+                    f"và prev_rsi ({prev['rsi']:.2f}) < last_rsi ({last['rsi']:.2f})."
                 )
             else:
-                rsi_ok = (last["rsi"] > rsi_threshold_short) and (prev["rsi"] > last["rsi"])
+                rsi_ok = True
+                #rsi_ok = (last["rsi"] > rsi_threshold_short) and (prev["rsi"] > last["rsi"])
                 st.info(
-                    f"RSI Pullback (SHORT) — prev={prev['rsi']:.2f}, last={last['rsi']:.2f}, "
-                    f"threshold={rsi_threshold_short}, ok={rsi_ok}"
+                    f"RSI Pullback (SHORT) — "
+                    f"RSI trước đó (prev_rsi)={prev['rsi']:.2f}, RSI hiện tại (last_rsi)={last['rsi']:.2f}, "
+                    f"Ngưỡng RSI cho Short={rsi_threshold_short}, ok={rsi_ok}. "
+                    f"Không thỏa điều kiện: last_rsi({last['rsi']:.2f}) > ngưỡng RSI short({rsi_threshold_short}) "
+                    f"và prev_rsi({prev['rsi']:.2f}) > last_rsi ({last['rsi']:.2f})."
                 )
-
             if not rsi_ok:
                 st.warning(f"❌ Không thỏa điều kiện RSI pullback cho hướng {final_dir.upper()}")
                 return None

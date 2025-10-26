@@ -40,7 +40,7 @@ class AnalyzeEMAModel(BaseAnalyzeModel):
                 action = "NEUTRAL"
 
             result = (
-                f"**Kết quả EMA ({coin_pair})**\n"
+                f"**Kết quả tính EMA cặp ({coin_pair}), khung thời gian:{interval} **\n"
                 f"- EMA {short_period}: {last_ema_short:.2f}\n"
                 f"- EMA {long_period}: {last_ema_long:.2f}\n"
                 f"{signal}"
